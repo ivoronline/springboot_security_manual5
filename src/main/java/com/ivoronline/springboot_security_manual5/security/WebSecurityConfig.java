@@ -7,10 +7,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true)
@@ -26,23 +24,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   //=================================================================
-  // CONFIGURE
+  // CONFIGURE (Auth...)
   //=================================================================
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth.inMemoryAuthentication().withUser("myuser" ).password("myuserpassword" ).roles("USER" ); //USER
+    auth.inMemoryAuthentication().withUser("myadmin").password("myadminpassword").roles("ADMIN"); //ADMIN
+  }
 
-    //ADMIN
-    auth.inMemoryAuthentication()
-      .withUser("myadmin")
-      .password("{noop}myadminpassword")
-      .roles   ("ADMIN");
-
-    //USER
-    auth.inMemoryAuthentication()
-      .withUser("myuser")
-      .password("{noop}myuserpassword")
-      .roles   ("USER");
-
+  //=======================================================================
+  // PASSWORD ENCODER
+  //=======================================================================
+  @Bean
+  PasswordEncoder passwordEncoder() {
+    return NoOpPasswordEncoder.getInstance();
   }
 
   //=================================================================
